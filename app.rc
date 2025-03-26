@@ -1,0 +1,43 @@
+fn conf_enable_wercpaste {
+	paste_url=$conf_wd
+	paste_dir=`{pwd}^/_werc/src
+	conf_enable_app wercpaste
+    ll_add handlers_body_foot template apps/paste/foot.tpl
+
+}
+
+fn wercpaste_init {
+	if (~ $REQUEST_METHOD POST && ~ $post_arg_url url && ~ $req_path
+	$paste_url ) { # incoming paste
+		now=`{ date -n }
+		if (~ $cksum '1715a8eb' ) { # empty paste; discard
+			post_redirect $base_url^$paste_url
+		}
+		if not { # save and redirect
+			echo $"post_arg_paste > $paste_dir^/^$now
+			post_redirect $base_url^$paste_url^$now
+		}
+	}
+	if not { # show a paste if there is one
+		if (test -r $werc_root/$local_path && ~ $QUERY_STRING raw ) {
+				echo 'Content-type: text/plain'; echo ''; exec cat
+				$werc_root/$local_path
+			}
+	}
+
+	if (~ $REQUEST_METHOD GET ) { handler_body_main='begforpaste' }
+
+}
+
+fn begforpaste {
+	echo '<article class="pastebox">
+	<form action="'$paste_url'" method="post">
+	<textarea name="paste" cols="120" rows="20"
+	required></textarea>
+	<input type="submit" name="submit" value=Submit>
+	<span style="display: none"><input type="text" name="url"
+	value="url"> (do not change) </span>
+	</form>
+	</article>
+	'
+}
