@@ -1,0 +1,13 @@
+#!/bin/rc
+
+switch($#*) {
+case 0
+	awk '{printf("<span>%d</span>\t%s\n",NR,$0)}'
+case 1 
+	awk '{printf("<span>%d</span>\t%s\n",NR,$0)}' < $1
+case *
+	echo 'usage: catn file' >[1=2]
+	echo '       catn < file' >[1=2]
+	echo '       cat file | catn' >[1=2]
+}
+
