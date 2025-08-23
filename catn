@@ -1,0 +1,12 @@
+#!/bin/rc
+
+switch($#*) {
+case 0
+	awk '{printf("%-5d\t%s\n",NR,$0)}'
+case 1 
+	awk '{printf("%-5d\t%s\n",NR,$0)}' < $1
+case *
+	echo 'usage: catn file' >[1=2]
+	echo '       catn < file' >[1=2]
+	echo '       cat file | catn' >[1=2]
+}
